@@ -6,7 +6,7 @@ services:
   nginx:
     networks:
       - 1_directly
-    container_name: 1directly-nginx
+    container_name: 1_directly-nginx
     image: bbtsoftwareag/nginx-proxy-unrestricted-requestsize:alpine
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -15,8 +15,6 @@ services:
     image: demo_nginx_grpc
     networks:
       - 1_directly
-    ports:
-      - "50051:50051"
     container_name: 1_directly-greeter_server
     hostname: greeter_server
     environment:
