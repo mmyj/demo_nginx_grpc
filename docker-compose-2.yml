@@ -1,0 +1,80 @@
+version: '3.5'
+networks:
+  2_load_balancing:
+    driver: bridge
+services:
+  nginx:
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-nginx
+    hostname: nginx_1
+    image: bbtsoftwareag/nginx-proxy-unrestricted-requestsize:alpine
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./2_load_balancing/nginx:/etc/nginx/conf.d
+    restart: always
+  greeter_server_1:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_server_1
+    hostname: greeter_server_1
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_NAME=greeter_server_1
+    depends_on:
+      - nginx
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_server.py"
+  greeter_server_2:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_server_2
+    hostname: greeter_server_2
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_NAME=greeter_server_2
+    depends_on:
+      - nginx
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_server.py"
+  greeter_server_3:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_server_3
+    hostname: greeter_server_3
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_NAME=greeter_server_3
+    depends_on:
+      - nginx
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_server.py"
+  greeter_client:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_client
+    hostname: greeter_client
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - nginx
+      - greeter_server_1
+      - greeter_server_2
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_client.py"
