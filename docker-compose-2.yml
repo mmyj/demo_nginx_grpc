@@ -8,11 +8,17 @@ services:
       - 2_load_balancing
     container_name: 2_load_balancing-nginx
     hostname: nginx_1
-    image: bbtsoftwareag/nginx-proxy-unrestricted-requestsize:alpine
+    image: nginx
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./2_load_balancing/nginx:/etc/nginx/conf.d
     restart: always
+    depends_on:
+      - greeter_server_1
+      - greeter_server_2
+      - greeter_server_3
+      - greeter_again_server_1
+      - greeter_again_server_2
   greeter_server_1:
     image: demo_nginx_grpc
     networks:
@@ -22,8 +28,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - HOST_NAME=greeter_server_1
-    depends_on:
-      - nginx
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
@@ -38,8 +42,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - HOST_NAME=greeter_server_2
-    depends_on:
-      - nginx
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
@@ -54,8 +56,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - HOST_NAME=greeter_server_3
-    depends_on:
-      - nginx
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
@@ -70,8 +70,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - HOST_NAME=greeter_again_server_1
-    depends_on:
-      - nginx
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
@@ -86,8 +84,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - HOST_NAME=greeter_again_server_2
-    depends_on:
-      - nginx
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
@@ -105,6 +101,9 @@ services:
       - nginx
       - greeter_server_1
       - greeter_server_2
+      - greeter_server_3
+      - greeter_again_server_1
+      - greeter_again_server_2
     volumes:
       - "./2_load_balancing:/code"
       - "./venv:/venv"
