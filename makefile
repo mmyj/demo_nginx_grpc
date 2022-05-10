@@ -7,7 +7,7 @@ build:
 
 protos:
 	mkdir -p ./protos/gen
-	python -m grpc_tools.protoc -Iprotos/src --python_out=./protos/gen --grpc_python_out=./protos/gen ./protos/src/helloworld.proto
+	python -m grpc_tools.protoc -Iprotos/src --python_out=./protos/gen --grpc_python_out=./protos/gen ./protos/src/*
 
 up: protos
 	docker compose  -f docker-compose-$(test).yml up

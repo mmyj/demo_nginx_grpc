@@ -61,6 +61,38 @@ services:
       - "./venv:/venv"
       - "./protos:/protos"
     command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_server.py"
+  greeter_again_server_1:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_again_server_1
+    hostname: greeter_again_server_1
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_NAME=greeter_again_server_1
+    depends_on:
+      - nginx
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_again_server.py"
+  greeter_again_server_2:
+    image: demo_nginx_grpc
+    networks:
+      - 2_load_balancing
+    container_name: 2_load_balancing-greeter_again_server_2
+    hostname: greeter_again_server_2
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_NAME=greeter_again_server_2
+    depends_on:
+      - nginx
+    volumes:
+      - "./2_load_balancing:/code"
+      - "./venv:/venv"
+      - "./protos:/protos"
+    command: /bin/bash -c "source /venv/bin/activate && python /code/src/greeter_again_server.py"
   greeter_client:
     image: demo_nginx_grpc
     networks:
